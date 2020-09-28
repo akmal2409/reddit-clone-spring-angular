@@ -5,8 +5,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tech.talci.redditclonespring.domain.NotificationEmail;
 import tech.talci.redditclonespring.domain.User;
 import tech.talci.redditclonespring.domain.VerificationToken;
@@ -18,7 +20,6 @@ import tech.talci.redditclonespring.repositories.UserRepository;
 import tech.talci.redditclonespring.repositories.VerificationTokenRepository;
 import tech.talci.redditclonespring.security.JwtProvider;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,7 +75,7 @@ public class AuthService {
     void fetchUserAndEnable(VerificationToken verificationToken) {
         String username = verificationToken.getUser().getUsername();
 
-        User fetchedUser = userRepository.findByUsername(username).orElseThrow(() ->
+        User fetchedUser = userRepository.findUserByUsername(username).orElseThrow(() ->
                 new ResourceNotFoundException("User was not found"));
 
         fetchedUser.setEnabled(true);
@@ -88,4 +89,13 @@ public class AuthService {
         String authenticationToken = jwtProvider.generateToken(authenticate);
         return new AuthenticationResponse(authenticationToken, loginRequest.getUsername());
     }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder.
+                getContext().getAuthentication().getPrincipal();
+        return userRepository.findUserByUsername(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+    }
+
 }

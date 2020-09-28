@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.talci.redditclonespring.domain.Subreddit;
 import tech.talci.redditclonespring.dto.SubredditDto;
+import tech.talci.redditclonespring.exceptions.RedditException;
+import tech.talci.redditclonespring.mapper.SubredditMapper;
 import tech.talci.redditclonespring.repositories.SubredditRepository;
 
 import java.time.Instant;
@@ -18,20 +20,14 @@ import java.util.stream.Collectors;
 public class SubredditService {
 
     private final SubredditRepository subredditRepository;
+    private final SubredditMapper subredditMapper;
 
     @Transactional
     public SubredditDto save(SubredditDto subredditDto) {
-        Subreddit saved = subredditRepository.save(mapSubredditDto(subredditDto));
+        Subreddit saved = subredditRepository.save(subredditMapper.subredditDtoToSubreddit(subredditDto));
         subredditDto.setId(saved.getId());
 
         return subredditDto;
-    }
-
-    private Subreddit mapSubredditDto(SubredditDto subredditDto) {
-        return Subreddit.builder().name(subredditDto.getSubredditName())
-                .description(subredditDto.getDescription())
-                .createdDate(Instant.now())
-                .build();
     }
 
     @Transactional(readOnly = true)
@@ -39,18 +35,13 @@ public class SubredditService {
 
         return subredditRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(subredditMapper::subredditToSubredditDto)
                 .collect(Collectors.toList());
     }
 
-    private SubredditDto mapToDto(Subreddit subreddit) {
 
-        SubredditDto subredditDto = new SubredditDto();
-        subredditDto.setDescription(subreddit.getDescription());
-        subredditDto.setId(subreddit.getId());
-        subredditDto.setSubredditName(subreddit.getName());
-        subredditDto.setNumberOfPosts(subreddit.getPosts().size());
-
-        return subredditDto;
+    public SubredditDto findById(Long id) {
+        return subredditMapper.subredditToSubredditDto(subredditRepository.findById(id)
+                .orElseThrow(() -> new RedditException("Subreddit was not found!")));
     }
 }
