@@ -1,0 +1,61 @@
+<div class="register-section">
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="text-align: center">
+                    <h4>Register</h4>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+                        <div class="form-group row">
+                            <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail
+                                Address
+                            </label>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning reddit-alert" *ngIf="signupForm.get('email').invalid && signupForm.get('email').touched">
+                                    <span *ngIf="signupForm.get('email').errors['email']">Email is invalid</span>
+                                    <span *ngIf="signupForm.get('email').errors['required']">Email is required</span>
+                                </div>
+                                <input type="text" id="email_address" class="form-control" 
+                                name="email-address" [formControlName]="'email'" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">Username</label>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning reddit-alert" *ngIf="signupForm.get('username').invalid && signupForm.get('username').touched">
+                                    <span *ngIf="signupForm.get('username').errors['minLength']">At least 4 characters long!</span>
+                                    <span *ngIf="signupForm.get('username').errors['required']">Username is required</span>
+                                </div>
+                                <input type="text" class="form-control" [formControlName]="'username'" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning reddit-alert" *ngIf="signupForm.get('password').touched && signupForm.get('password').invalid">
+                                    <span *ngIf="signupForm.get('password').errors['required']">Password is required!</span>
+                                    <span *ngIf="signupForm.get('password').errors['minLength']">At least 5 characters long!</span>
+                                </div>
+                                <input type="password" id="password" class="form-control" [formControlName]="'password'" name="password" required>
+                            </div>
+                        </div>
+
+                        <span class="col-md-6 offset-md-4 mt-5">
+                            <button type="submit" class="sign-up" [disabled]="signupForm.invalid">
+                                Sign Up
+                            </button>
+                        </span>
+                        <span class="col-md-6 offset-md-2 mt-2">
+                            <span style="padding-left: 15px">Existing user? <a routerLink="/login">Log In</a></span>
+                        </span>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
