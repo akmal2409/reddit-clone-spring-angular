@@ -3,7 +3,6 @@ package tech.talci.redditclonespring.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tech.talci.redditclonespring.domain.Post;
 import tech.talci.redditclonespring.dto.PostRequest;
 import tech.talci.redditclonespring.dto.PostResponse;
 import tech.talci.redditclonespring.services.PostService;

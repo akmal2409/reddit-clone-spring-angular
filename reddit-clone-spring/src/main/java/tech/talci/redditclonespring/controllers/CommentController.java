@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import tech.talci.redditclonespring.dto.CommentDto;
 import tech.talci.redditclonespring.services.CommentService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/cpmments")
+@RequestMapping("/api/comments")
 @Slf4j
 @AllArgsConstructor
 public class CommentController {
@@ -21,15 +23,15 @@ public class CommentController {
         commentService.save(commentDto);
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/by-post/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public void getAllCommentsForPost(@PathVariable Long postId){
-        commentService.getAllCommentsForPost(postId);
+    public List<CommentDto> getAllCommentsForPost(@PathVariable Long postId){
+        return commentService.getAllCommentsForPost(postId);
     }
 
     @GetMapping("/by-user/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public void getAllUsersComments(@PathVariable String username) {
-        commentService.getAllUsersComments(username);
+    public List<CommentDto> getAllUsersComments(@PathVariable String username) {
+        return commentService.getAllUsersComments(username);
     }
 }

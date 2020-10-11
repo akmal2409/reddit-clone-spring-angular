@@ -15,4 +15,7 @@ public class PostResponse {
     private String description;
     private String subredditName;
     private String username;
+    private Integer voteCount;
+    private Integer commentCount;
+    private String duration;
 }
