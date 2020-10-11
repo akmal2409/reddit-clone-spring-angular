@@ -1,13 +1,20 @@
 package tech.talci.redditclonespring.controllers;
 
+import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.talci.redditclonespring.domain.RefreshToken;
 import tech.talci.redditclonespring.dto.AuthenticationResponse;
 import tech.talci.redditclonespring.dto.LoginRequest;
+import tech.talci.redditclonespring.dto.RefreshTokenRequest;
 import tech.talci.redditclonespring.dto.RegisterRequest;
+import tech.talci.redditclonespring.repositories.RefreshTokenRepository;
 import tech.talci.redditclonespring.services.AuthService;
+import tech.talci.redditclonespring.services.RefreshTokenService;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -15,6 +22,7 @@ import tech.talci.redditclonespring.services.AuthService;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest){
@@ -36,5 +44,16 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
+    @PostMapping("/refresh/token")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthenticationResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return authService.refreshToken(refreshTokenRequest);
+    }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+
+        return ResponseEntity.status(HttpStatus.OK).body("You have successfully logged out!");
+    }
 }

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.time.Instant;
+import java.util.Date;
 
 import static io.jsonwebtoken.Jwts.parser;
 
@@ -39,8 +41,19 @@ public class JwtProvider {
         return Jwts.builder()
                 .setSubject(principal.getUsername())
                 .signWith(getPrivateKey())
+                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMill)))
                 .compact();
     }
+
+    public String generateTokenWithUsername(String username) {
+        return Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(Date.from(Instant.now()))
+            .signWith(getPrivateKey())
+            .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMill)))
+                .compact();
+    }
+
     private PrivateKey getPrivateKey() {
         try {
             return (PrivateKey) keyStore.getKey("redditclone", "01041955".toCharArray());
@@ -69,5 +82,9 @@ public class JwtProvider {
                 .getBody();
 
         return claims.getSubject();
+    }
+
+    public Long getJwtExpirationInMill() {
+        return jwtExpirationInMill;
     }
 }
